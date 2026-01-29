@@ -13,7 +13,7 @@
 		"type": "extension-store",
 		"url": ""
 	},
-	"categories": "Other",
+	"categories": "PCB",
 	"keywords": ["梗图", "meme", "emoji"],
 	"images": {
 		"logo": "./images/logo.jpg"
