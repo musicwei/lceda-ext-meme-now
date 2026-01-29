@@ -1,0 +1,41 @@
+{
+	"name": "emoji-now",
+	"uuid": "eb7c7743d19145db9111ebc65a803c6f",
+	"displayName": "表情助手",
+	"description": "插入各种梗图表情包的API扩展",
+	"version": "1.0.0",
+	"publisher": "musicwei",
+	"engines": {
+		"eda": "^2.3.0"
+	},
+	"license": "Apache-2.0",
+	"repository": {
+		"type": "extension-store",
+		"url": ""
+	},
+	"categories": "Other",
+	"keywords": ["梗图", "meme", "emoji"],
+	"images": {
+		"logo": "./images/logo.jpg"
+	},
+	"homepage": "https://github.com/musicwei/lceda-ext-meme-now",
+	"bugs": "https://github.com/musicwei/lceda-ext-meme-now/issues",
+	"activationEvents": {},
+	"entry": "./dist/index",
+	"dependentExtensions": {},
+	"headerMenus": {
+		"pcb": [
+			{
+				"id": "emoji-now",
+				"title": "表情助手",
+				"menuItems": [
+					{
+						"id": "emoji-now",
+						"title": "表情助手",
+						"registerFn": "meme"
+					}
+				]
+			}
+		]
+	}
+}

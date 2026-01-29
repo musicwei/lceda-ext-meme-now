@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="zh-Hans">
+	<head>
+		<title>表情助手</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<style>
+			:root {
+				font-family:
+					system-ui,
+					Segoe UI,
+					Helvetica,
+					Arial;
+			}
+			body {
+				margin: 12px;
+			}
+			.header {
+				display: flex;
+				gap: 8px;
+				align-items: center;
+			}
+			#results {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, 80px);
+				gap: 8px;
+				margin-top: 12px;
+			}
+			.thumb {
+				width: 80px;
+				height: 80px;
+				object-fit: cover;
+				border: 2px solid transparent;
+				border-radius: 6px;
+				cursor: pointer;
+			}
+			.thumb.selected {
+				border-color: #0b84ff;
+			}
+			.controls {
+				margin-top: 12px;
+				display: flex;
+				gap: 8px;
+			}
+			#emoji-picker {
+				margin-top: 8px;
+				display: none;
+				max-height: 200px;
+				overflow: auto;
+				border: 1px solid #eee;
+				padding: 6px;
+				border-radius: 6px;
+				background: #fff;
+			}
+			#source-tabs {
+				display: flex;
+				gap: 6px;
+			}
+			.tab {
+				padding: 6px 10px;
+				border-radius: 6px;
+				border: 1px solid transparent;
+				background: transparent;
+				cursor: pointer;
+			}
+			.tab.active {
+				background: #0b84ff;
+				color: #fff;
+				border-color: #0b84ff;
+			}
+			.emoji-btn {
+				cursor: pointer;
+				border: 0;
+				background: transparent;
+				font-size: 20px;
+				padding: 6px;
+				line-height: 1;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="source-tabs" role="tablist" style="margin-top: 8px">
+			<button type="button" class="tab active" data-source="emoj">Emoji</button>
+			<button type="button" class="tab" data-source="meme">Meme</button>
+		</div>
+		<div class="header">
+			<input id="query" placeholder="输入搜索关键字" style="flex: 1; padding: 6px" />
+			<button id="search">搜索</button>
+		</div>
+		<div id="status" style="margin-top: 8px; color: #666; font-size: 13px"></div>
+		<div id="emoji-picker" aria-hidden="true"></div>
+		<div id="results" aria-live="polite"></div>
+		<div class="controls">
+			<label style="display: flex; align-items: center; gap: 6px">
+				<input type="checkbox" id="invert" />
+				<span>反色</span>
+			</label>
+			<button id="insert" disabled>插入所选图片</button>
+		</div>
+
+		<script src="/iframe/search.js"></script>
+	</body>
+</html>
