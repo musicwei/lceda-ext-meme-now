@@ -12,6 +12,9 @@
 **插入emoj表情**
 ![emoj](images/emoj.gif)
 
+**插入彩色丝印**
+![emoj](images/color.gif)
+
 ## 使用方法
 
 1. 导入插件后，在嘉立创EDA的PCB编辑器中，点击高级→表情助手→表情助手

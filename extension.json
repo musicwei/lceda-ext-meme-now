@@ -3,7 +3,7 @@
 	"uuid": "eb7c7743d19145db9111ebc65a803c6f",
 	"displayName": "表情助手",
 	"description": "插入各种梗图表情包的API扩展",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"publisher": "musicwei",
 	"engines": {
 		"eda": "^2.3.0"
