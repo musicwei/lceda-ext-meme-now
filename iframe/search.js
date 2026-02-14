@@ -1,36 +1,72 @@
-async function edaInsertImage(size, blob, invert, opts = {}) {
+async function edaInsertImage(size, blob, invert, colorful, opts = {}) {
 	const tolerance = typeof opts.tolerance === 'number' ? opts.tolerance : 0;
 	const simplification = typeof opts.simplification === 'number' ? opts.simplification : 0;
 	const smoothing = typeof opts.smoothing === 'number' ? opts.smoothing : 0;
 	const despeckling = typeof opts.despeckling === 'number' ? opts.despeckling : 0;
 	const whiteAsBackgroundColor = typeof opts.whiteAsBackgroundColor === 'boolean' ? opts.whiteAsBackgroundColor : true;
 
-	const edaimage = await eda.pcb_MathPolygon.convertImageToComplexPolygon(
-		blob,
-		size.width,
-		size.height,
-		tolerance,
-		simplification,
-		smoothing,
-		despeckling,
-		whiteAsBackgroundColor,
-		invert,
-	);
-	eda.sys_Message.showToastMessage('请单击放置', 'info', 3);
-	// console.log('开始插入');
-	// const Point = await eda.pcb_SelectControl.getCurrentMousePosition();
-	eda.pcb_Event.addMouseEventListener(
-		'put',
-		'selected',
-		async () => {
-			const Point = await eda.pcb_SelectControl.getCurrentMousePosition();
-			// console.log('Inserting image at', Point);
-			eda.pcb_PrimitiveImage.create(Point.x, Point.y, edaimage, EPCB_LayerId.TOP_SILKSCREEN, size.width, size.height, 0, false, false);
-			// eda.pcb_Event.removeMouseEventListener('put');
-		},
-		true,
-	);
-	// eda.pcb_PrimitiveImage.create(Point.x, Point.y, edaimage, EPCB_LayerId.TOP_SILKSCREEN, size.width, size.height, 0, false, false);
+	if (colorful) {
+		// blob转base64
+		Base64string = await new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.onloadend = () => {
+				resolve(reader.result);
+			};
+			reader.onerror = (err) => {
+				reject(err);
+			};
+			reader.readAsDataURL(blob);
+		});
+		eda.sys_Message.showToastMessage('请单击放置', 'info', 3);
+		// console.log('开始插入');
+
+		eda.pcb_Event.addMouseEventListener(
+			'put',
+			'selected',
+			async () => {
+				const Point = await eda.pcb_SelectControl.getCurrentMousePosition();
+
+				eda.pcb_PrimitiveObject.create(
+					EPCB_LayerId.TOP_SILKSCREEN,
+					Point.x,
+					Point.y,
+					Base64string,
+					size.width,
+					size.height,
+					0,
+					false,
+					'img',
+					false,
+				);
+			},
+			true,
+		);
+	} else {
+		const edaimage = await eda.pcb_MathPolygon.convertImageToComplexPolygon(
+			blob,
+			size.width,
+			size.height,
+			tolerance,
+			simplification,
+			smoothing,
+			despeckling,
+			whiteAsBackgroundColor,
+			invert,
+		);
+		eda.sys_Message.showToastMessage('请单击放置', 'info', 3);
+		// console.log('开始插入');
+
+		eda.pcb_Event.addMouseEventListener(
+			'put',
+			'selected',
+			async () => {
+				const Point = await eda.pcb_SelectControl.getCurrentMousePosition();
+
+				eda.pcb_PrimitiveImage.create(Point.x, Point.y, edaimage, EPCB_LayerId.TOP_SILKSCREEN, size.width, size.height, 0, false, false);
+			},
+			true,
+		);
+	}
 }
 // 使用注册的 id 每分钟10次调用
 async function searchApihzMemes(query, limit = 24) {
@@ -91,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	const emojiPickerEl = document.getElementById('emoji-picker');
 	const insertBtn = document.getElementById('insert');
 	const invertEl = document.getElementById('invert');
+	const colorfulEl = document.getElementById('colorful');
 	if (!qEl || !btn || !resultsEl || !status || !insertBtn) {
 		return;
 	}
@@ -170,6 +207,29 @@ document.addEventListener('DOMContentLoaded', () => {
 	*/
 	let selected = null;
 
+	// 选择彩色时，反色选项自动取消并禁用
+	if (colorfulEl && invertEl) {
+		colorfulEl.addEventListener('change', () => {
+			if (colorfulEl.checked) {
+				invertEl.checked = false;
+				invertEl.disabled = true;
+			} else {
+				invertEl.disabled = false;
+			}
+		});
+	}
+
+	if (colorfulEl && invertEl) {
+		invertEl.addEventListener('change', () => {
+			if (invertEl.checked) {
+				colorfulEl.checked = false;
+				colorfulEl.disabled = true;
+			} else {
+				colorfulEl.disabled = false;
+			}
+		});
+	}
+
 	function setStatus(text) {
 		status.textContent = text || '';
 	}
@@ -189,13 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				if (active && active.dataset && active.dataset.source) source = active.dataset.source;
 			}
 
-			// emoji mode: show emoji picker (useful to browse/select)
 			if (source === 'emoj') {
-				// if (emojiPickerEl) {
-				// 	if (resultsEl) resultsEl.style.display = 'none';
-				// 	renderEmojiPicker(q);
-				// 	setStatus('请选择一个 Emoji');
-				// }
 				return;
 			}
 
@@ -392,7 +446,6 @@ document.addEventListener('DOMContentLoaded', () => {
 			});
 		}
 
-		//
 		function renderEmojiToDataUrl(emoji, size = 64, bg = null) {
 			const c = document.createElement('canvas');
 			c.width = size;
@@ -483,6 +536,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		// const targetEl = document.getElementById('target');
 		// const target = (targetEl && targetEl.value) || 'sch';
 		const invert = !!(invertEl && invertEl.checked);
+		const colorful = !!(colorfulEl && colorfulEl.checked);
 		const url = selected.fullUrl || selected.thumbUrl;
 		try {
 			const resp = await fetch(url, { mode: 'cors' });
@@ -529,7 +583,7 @@ document.addEventListener('DOMContentLoaded', () => {
 						}
 					}
 				}
-				edaInsertImage(size, blobToUse, invert, opts);
+				edaInsertImage(size, blobToUse, invert, colorful, opts);
 			};
 			img.onerror = () => {
 				URL.revokeObjectURL(objUrl);
